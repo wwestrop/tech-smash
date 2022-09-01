@@ -1,9 +1,10 @@
 import { Image, Frame, GIF } from "imagescript";
 import * as fs from "fs/promises";
-import { Dat } from './data.js';
+import { AnimationParams } from './animationParams.js';
+import { IAnimationParams } from './animationParams.js';
 
 
-const baseImage = await loadGif(Dat.baseImage);
+const baseImage = await loadGif(OverlayParams.baseImage);
 
 
 let overlayImage: GIF | undefined;
@@ -14,7 +15,7 @@ let desiredScale: number | undefined;
 for (let i = 0; i < baseImage.length; i++) {
     const frame: Frame = baseImage[i];
 
-    desiredScale = Dat.keyFrames[i]?.scale ?? desiredScale;
+    desiredScale = OverlayParams.keyFrames[i]?.scale ?? desiredScale;
     if (overlayImage?.width !== desiredScale) {
         overlayImage = await loadGif("netsuite.gif")
         overlayImage.resize(desiredScale, Image.RESIZE_AUTO);
@@ -72,7 +73,7 @@ console.log("done");
     const cX = overlay.width / 2;
     const cY = overlay.height / 2;
 
-    let oyy = Dat.keyFrames[frame];
+    let oyy = OverlayParams.keyFrames[frame];
     if (!oyy) { 
         return;// {x: 40, y: 40}; // TODO really we just won't render this
     }

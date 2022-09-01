@@ -1,7 +1,7 @@
 {
   "name": "defenstration-as-a-service",
   "version": "1.0.0",
-  "description": "When there's no other way to express your frustration",
+  "description": "For when there's no other way to express how you really feel....",
   "main": "index.js",
   "type": "module",
   "scripts": {
