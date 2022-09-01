@@ -1,30 +1,24 @@
 import { Image, Frame, GIF } from "imagescript";
 import * as fs from "fs/promises";
 import { Dat } from './data.js';
-import { countReset } from "console";
 
-// function fo() {
-//     return;
-//     console.log("he");
-// }
 
-var buffer = await fs.readFile(Dat.baseImage);
-const baseImage = await GIF.decode(buffer);
+const baseImage = await loadGif(Dat.baseImage);
 
-var buffer2 = await fs.readFile("netsuite.gif");
-const overlayImage = await GIF.decode(buffer2);
-overlayImage.resize(120, Image.RESIZE_AUTO);
 
-console.log(`loaded: ${baseImage.width}×${baseImage.height}`);
-console.log(`l: ${baseImage.length}`);
+let overlayImage: GIF | undefined;
+let desiredScale: number | undefined;
+
+
 
 for (let i = 0; i < baseImage.length; i++) {
     const frame: Frame = baseImage[i];
 
-    // if (i === 35) {
-    //     console.log("this frame is iffy");
-    //     continue;
-    // }
+    desiredScale = Dat.keyFrames[i]?.scale ?? desiredScale;
+    if (overlayImage?.width !== desiredScale) {
+        overlayImage = await loadGif("netsuite.gif")
+        overlayImage.resize(desiredScale, Image.RESIZE_AUTO);
+    }
 
     const sampleFrame = baseImage[0] as Image;
 
@@ -85,6 +79,7 @@ console.log("done");
     };
 }
 
-function cap(base: Image, x: number, y: number) {
-
+async function loadGif(filename: string) {
+    var buffer2 = await fs.readFile(filename);
+    return await GIF.decode(buffer2);
 }
