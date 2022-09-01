@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "gif",
@@ -19,6 +19,7 @@
     "@types/node": "^18.7.14",
     "deno": "^0.1.1",
     "imagescript": "^1.2.9",
+    "ts-jest": "^28.0.8",
     "typescript": "^4.8.2"
   }
 }
