@@ -1,0 +1,24 @@
+{
+  "name": "defenstration-as-a-service",
+  "version": "1.0.0",
+  "description": "When there's no other way to express your frustration",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gif",
+    "throw",
+    "computer",
+    "window"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^18.7.14",
+    "deno": "^0.1.1",
+    "imagescript": "^1.2.9",
+    "typescript": "^4.8.2"
+  }
+}
