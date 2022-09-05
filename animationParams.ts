@@ -3,7 +3,7 @@ export interface IAnimationParams {
     keyFrames: {x: number, y: number, scale: number}[]
 }
 
-export const AnimationParams: IAnimationParams = {
+export const WindowToss: IAnimationParams = {
     baseImage: "8ea06168f7219ede44c68dac8ed5cbef.gif",
     keyFrames: [
         {x: 260, y: 200, scale: 120},
