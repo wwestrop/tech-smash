@@ -1,69 +1,81 @@
 import { Image, Frame, GIF } from "imagescript";
 import * as fs from "fs/promises";
-import { AnimationParams } from './animationParams.js';
-import { IAnimationParams } from './animationParams.js';
+import { IAnimationParams, AnimationParams } from './animationParams.js';
 
 
-const baseImage = await loadGif(OverlayParams.baseImage);
+async function main() {
+    //const overlayImage = await fs.readFile("spekkers.gif");
+    const overlayImage = await fs.readFile("netsuite.gif");
+    //const overlayImage = await loadGif("netsuite.gif");
 
+    const encodedBuffer = await create(overlayImage, 1.1, AnimationParams);
 
-let overlayImage: GIF | undefined;
-let desiredScale: number | undefined;
+    await fs.writeFile("dist/out.gif", encodedBuffer);
+    await fs.writeFile("dist/out.html", dataHref(encodedBuffer));
 
-
-
-for (let i = 0; i < baseImage.length; i++) {
-    const frame: Frame = baseImage[i];
-
-    desiredScale = OverlayParams.keyFrames[i]?.scale ?? desiredScale;
-    if (overlayImage?.width !== desiredScale) {
-        overlayImage = await loadGif("netsuite.gif")
-        overlayImage.resize(desiredScale, Image.RESIZE_AUTO);
-    }
-
-    const sampleFrame = baseImage[0] as Image;
-
-    // TODO none of this [0] stuff
-    const overlayOffset = getOffset(overlayImage[0] as Image, i);
-    if (!overlayOffset) {
-        console.log("(skip the overlay on this frame)");
-        continue;
-    }
-
-    //console.log(`frame ${i}`);
-    console.log(`${i}::  ${JSON.stringify(overlayOffset)}`);
-
-    for (let j = 1; j <= overlayImage.width; j++) {
-        for (let k = 1; k <= overlayImage.height; k++) {
-
-            const candidatePixel = {x: overlayOffset.x + j - 1, y: overlayOffset.y + k - 1};
-
-            if (candidatePixel.x < 1 || candidatePixel.x > sampleFrame.width) {
-                continue;
-            }
-        
-            if (candidatePixel.y < 1 || candidatePixel.y > sampleFrame.height) {
-                continue;
-            }
-
-            // TODO the overlay might not be a gif
-            const overlayPixel = (overlayImage[0] as Frame).getPixelAt(j, k);
-
-            //frame.setPixelAt(overlayPos.x, overlayPos.y, overlayPixel);
-            frame.setPixelAt(candidatePixel.x, candidatePixel.y, overlayPixel);
-        }
-    }
-    //frame.setPixelAt
+    progBar(12, 34);
+    console.log("done");
 }
 
-var encodedBuffer = await baseImage.encode(100);
-await fs.writeFile("dist/out.gif", encodedBuffer);
-await fs.writeFile("dist/out.html", dataHref(encodedBuffer));
+await main();
 
 
-progBar(12, 34);
+async function create(overlayImage: Uint8Array, overlayScale: number, animParams: IAnimationParams): Promise<Uint8Array> {
+    
+    const baseImage = await loadGif(animParams.baseImage);
 
-console.log("done");
+    let scaledOverlayImage: Image = undefined!; //| undefined;
+    let desiredScale: number | undefined; 
+    
+    for (let i = 0; i < baseImage.length; i++) {
+        const frame: Frame = baseImage[i];
+    
+        desiredScale = animParams.keyFrames[i]?.scale * overlayScale ?? desiredScale;
+        if (scaledOverlayImage?.width !== desiredScale) {
+            scaledOverlayImage = (await GIF.decode(overlayImage))[0];
+            scaledOverlayImage.resize(desiredScale, Image.RESIZE_AUTO);
+        }
+    
+        const sampleFrame = baseImage[0] as Image;
+    
+        const overlayOffset = getOffset(scaledOverlayImage, i);
+        if (!overlayOffset) {
+            console.log("(skip the overlay on this frame)");
+            continue;
+        }
+    
+        //console.log(`frame ${i}`);
+        console.log(`${i}::  ${JSON.stringify(overlayOffset)}`);
+    
+        for (let j = 1; j <= scaledOverlayImage.width; j++) {
+            for (let k = 1; k <= scaledOverlayImage.height; k++) {
+    
+                const candidatePixel = {x: overlayOffset.x + j - 1, y: overlayOffset.y + k - 1};
+    
+                if (candidatePixel.x < 1 || candidatePixel.x > sampleFrame.width) {
+                    continue;
+                }
+            
+                if (candidatePixel.y < 1 || candidatePixel.y > sampleFrame.height) {
+                    continue;
+                }
+    
+                const overlayPixel = scaledOverlayImage.getPixelAt(j, k);
+    
+                //frame.setPixelAt(overlayPos.x, overlayPos.y, overlayPixel);
+                frame.setPixelAt(candidatePixel.x, candidatePixel.y, overlayPixel);
+            }
+        }
+        //frame.setPixelAt
+    }
+    
+    var encodedBuffer = await baseImage.encode(100);
+
+    return encodedBuffer;
+}
+
+
+
 
 
 
@@ -73,7 +85,7 @@ console.log("done");
     const cX = overlay.width / 2;
     const cY = overlay.height / 2;
 
-    let oyy = OverlayParams.keyFrames[frame];
+    let oyy = AnimationParams.keyFrames[frame];
     if (!oyy) { 
         return;// {x: 40, y: 40}; // TODO really we just won't render this
     }
