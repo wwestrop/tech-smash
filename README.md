@@ -1,6 +1,6 @@
 # Tech Smash As A Service
 
-For when there's no other way to express how you really feel....
+When there's no other way to express how you feel....
 
 [Try it out here](https://wwestrop.github.io)
 

@@ -1,6 +1,18 @@
-import { Image, Frame, GIF } from "imagescript";
-import * as fs from "fs/promises";
+//import { Image, Frame, GIF } from "./node_modules/imagescript/ImageScript.js";
+//import * as Imagescript from "imagescript";
+//import { Image, GIF, Frame } from "https://cdn.jsdelivr.net/gh/matmen/imagescript@browser/browser/ImageScript.js";
+import { Image, GIF, Frame } from "imagescript";
+// import { Image, GIF } from "https://cdn.skypack.dev/imagescript";
+import * as fs from 'fs/promises';
 import { IAnimationParams, WindowToss } from './animationParams.js';
+
+// const imagescript = typeof window === 'undefined'
+//     ? await import("imagescript")
+//     : await import("https://cdn.skypack.dev/imagescript");
+
+// const Image = imagescript.Image;
+// const GIF = imagescript.GIF;
+// const Frame = imagescript.Frame;
 
 type Point = {x: number, y: number};
 type UserParams = { scale: number, xAdjust: number; yAdjust: number };
@@ -81,8 +93,12 @@ export async function create(overlayImage: Uint8Array, userParams: UserParams, a
                     continue;
                 }
     
-                const overlayPixel = scaledOverlayImage.getPixelAt(j, k);
-                frame.setPixelAt(candidatePixel.x, candidatePixel.y, overlayPixel);
+                const overlayPixel = scaledOverlayImage.getRGBAAt(j, k);
+                if (overlayPixel[3] > 150) {
+                    // TODO proper alpha blending
+                    var newColour = Image.rgbToColor(overlayPixel[0], overlayPixel[1], overlayPixel[2]);
+                    frame.setPixelAt(candidatePixel.x, candidatePixel.y, newColour);
+                }
             }
         }
     }
@@ -114,8 +130,63 @@ function getOffset(overlay: Image, userParams: UserParams, animParams: IAnimatio
 }
 
 async function loadGif(filename: string) {
-    var buffer2 = await fs.readFile(filename);
-    return await GIF.decode(buffer2);
+
+    var buffer = await fs.readFile(filename);
+    return await GIF.decode(buffer);
+
+    // let fileContent: Uint8Array = null!;
+
+    // if (typeof window === 'undefined') {
+    //     const fs = await import("fs/promises");
+    //     fileContent = await fs.readFile(filename);
+    // }
+    // else {
+    //     fileContent = new Uint8Array(await (await fetch(filename)).arrayBuffer());
+    // }
+
+    // // /new FileReader().readAsArrayBuffer()
+    
+    // return await GIF.decode(new Uint8Array(fileContent));
+    // // var fr = new FileReader();
+
+    // //     fr.onload = (e) => {
+    // //         var r = fr.result;
+    
+    // //         if (r instanceof ArrayBuffer) {
+    // //             x = new Uint8Array(r);
+    // //         }
+    // //         else {
+    // //             alert("Couldn't load file");
+    // //         }
+    // //     };
+    
+    // //     fr.readAsArrayBuffer(file);
+
+    // // return new Promise<GIF>((resolve, reject) => 
+    // // {
+    // //     try {
+    // //         var fr = new FileReader();
+
+    // //         fr.onload = (e) => {
+    // //             var r = fr.result;
+        
+    // //             if (r instanceof ArrayBuffer) {
+    // //                 x = new Uint8Array(r);
+    // //             }
+    // //             else {
+    // //                 alert("Couldn't load file");
+    // //             }
+    // //         };
+        
+    // //         fr.readAsArrayBuffer(file);
+    // //     }
+    // //     catch (ex) {
+    // //         reject(ex);
+    // //     }
+    // // });
+
+    // // var buffer2 = await fs.readFile(filename);
+    // // return await GIF.decode(buffer2);
 }
 
 
