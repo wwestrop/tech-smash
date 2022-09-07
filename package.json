@@ -1,11 +1,11 @@
 {
-  "name": "defenstration-as-a-service",
+  "name": "tech-smash-as-a-service",
   "version": "1.0.0",
-  "description": "For when there's no other way to express how you really feel....",
+  "description": "When there's no other way to express how you feel....",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "jest"
+    "build": "tsc"
   },
   "keywords": [
     "gif",
@@ -13,12 +13,14 @@
     "computer",
     "window"
   ],
-  "author": "",
+  "author": "Will Westrop",
   "license": "MIT",
   "dependencies": {
     "@types/node": "^18.7.14",
+    "bootstrap": "^5.2.1",
     "deno": "^0.1.1",
     "imagescript": "^1.2.9",
+    "serve": "^14.0.1",
     "ts-jest": "^28.0.8",
     "typescript": "^4.8.2"
   }

@@ -28,17 +28,17 @@ async function browserMock() {
 
         fr.onload = (e) => {
             var r = fr.result;
-    
+
             if (r instanceof ArrayBuffer) {
                 x = new Uint8Array(r);
             }
             else {
                 alert("Couldn't load file");
             }
-        };  
-    
+        };
+
         fr.readAsArrayBuffer(file);
-        
+
     }
 
     async function smashySmashyClick() {
@@ -46,7 +46,7 @@ async function browserMock() {
             alert("Please specify an image file to overlay");
             return;
         }
-    
+
         let resultImg: any;
         const result = await create(x, null!, WindowToss);
         resultImg.src = dataHref(result);
@@ -55,44 +55,44 @@ async function browserMock() {
 
 
 export async function create(overlayImage: Uint8Array, userParams: UserParams, animParams: IAnimationParams): Promise<Uint8Array> {
-    
+
     const baseImage = await loadGif(animParams.baseImage);
 
     let scaledOverlayImage: Image = undefined!; //| undefined;
-    let desiredScale: number | undefined; 
-    
+    let desiredScale: number | undefined;
+
     for (let i = 0; i < baseImage.length; i++) {
         const frame: Frame = baseImage[i];
-    
+
         desiredScale = animParams.keyFrames[i]?.scale * userParams.scale ?? desiredScale;
         if (scaledOverlayImage?.width !== desiredScale) {
             scaledOverlayImage = (await GIF.decode(overlayImage))[0];
             scaledOverlayImage.resize(desiredScale, Image.RESIZE_AUTO);
         }
-    
+
         const sampleFrame = baseImage[0] as Image;
-    
+
         const overlayOffset = getOffset(scaledOverlayImage, userParams, animParams, i);
         if (!overlayOffset) {
             console.log("(skip the overlay on this frame)");
             continue;
         }
-    
+
         console.log(`${i}::  ${JSON.stringify(overlayOffset)}`);
-    
+
         for (let j = 1; j <= scaledOverlayImage.width; j++) {
             for (let k = 1; k <= scaledOverlayImage.height; k++) {
-    
+
                 const candidatePixel = {x: overlayOffset.x + j - 1, y: overlayOffset.y + k - 1};
-    
+
                 if (candidatePixel.x < 1 || candidatePixel.x > sampleFrame.width) {
                     continue;
                 }
-            
+
                 if (candidatePixel.y < 1 || candidatePixel.y > sampleFrame.height) {
                     continue;
                 }
-    
+
                 const overlayPixel = scaledOverlayImage.getRGBAAt(j, k);
                 if (overlayPixel[3] > 150) {
                     // TODO proper alpha blending
@@ -102,7 +102,7 @@ export async function create(overlayImage: Uint8Array, userParams: UserParams, a
             }
         }
     }
-    
+
     var encodedBuffer = await baseImage.encode(100);
 
     return encodedBuffer;
@@ -119,7 +119,7 @@ function getOffset(overlay: Image, userParams: UserParams, animParams: IAnimatio
     const cY = overlay.height / 2;
 
     let oyy = animParams.keyFrames[frame];
-    if (!oyy) { 
+    if (!oyy) {
         return;     // Don't render this, or rather, leave the overlay in its last position
     }
 
@@ -145,13 +145,13 @@ async function loadGif(filename: string) {
     // }
 
     // // /new FileReader().readAsArrayBuffer()
-    
+
     // return await GIF.decode(new Uint8Array(fileContent));
     // // var fr = new FileReader();
 
     // //     fr.onload = (e) => {
     // //         var r = fr.result;
-    
+
     // //         if (r instanceof ArrayBuffer) {
     // //             x = new Uint8Array(r);
     // //         }
@@ -159,17 +159,17 @@ async function loadGif(filename: string) {
     // //             alert("Couldn't load file");
     // //         }
     // //     };
-    
+
     // //     fr.readAsArrayBuffer(file);
 
-    // // return new Promise<GIF>((resolve, reject) => 
+    // // return new Promise<GIF>((resolve, reject) =>
     // // {
     // //     try {
     // //         var fr = new FileReader();
 
     // //         fr.onload = (e) => {
     // //             var r = fr.result;
-        
+
     // //             if (r instanceof ArrayBuffer) {
     // //                 x = new Uint8Array(r);
     // //             }
@@ -177,7 +177,7 @@ async function loadGif(filename: string) {
     // //                 alert("Couldn't load file");
     // //             }
     // //         };
-        
+
     // //         fr.readAsArrayBuffer(file);
     // //     }
     // //     catch (ex) {

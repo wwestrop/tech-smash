@@ -10,18 +10,18 @@ await main();
 
 async function main() {
     const overlayImage = await fs.readFile("netsuite.gif");
-    
+
     const u: UserParams = {
         scale: 1.1,
         xAdjust: 0,
         yAdjust: 0,
     };
-    
+
     const encodedBuffer = await create(overlayImage, u, WindowToss);
-    
+
     await fs.writeFile("dist/out.gif", encodedBuffer);
     await fs.writeFile("dist/out.html", htmlFile(encodedBuffer));
-    
+
     progBar(12, 34);
     console.log("done");
 }
@@ -50,5 +50,5 @@ function progBar(value: number, max: number) {
 function htmlFile(gif: Uint8Array) {
     return "<html><body><img src='data:image/gif;base64,"
         + Buffer.from(gif).toString('base64')
-        + "' /></body></html>" 
+        + "' /></body></html>"
 }

@@ -15,7 +15,7 @@ export const WindowToss: IAnimationParams = {
         {x: 259, y: 132, scale: 110},
         {x: 259, y: 132, scale: 110},
         {x: 254, y: 134, scale: 110},       // back face of computer
-        {x: 248, y: 143, scale: 110},       
+        {x: 248, y: 143, scale: 110},
         {x: 212, y: 138, scale: 110},      // 11
         {x: 192, y: 130, scale: 110},
         {x: 178, y: 127, scale: 110},
@@ -27,13 +27,13 @@ export const WindowToss: IAnimationParams = {
         {x: 182, y: 144, scale: 110},       // powering up the swing (on the way out the window)
         {x: 209, y: 142, scale: 110},       // really smaller now?
         {x: 269, y: 132, scale: 100},  // 21       // just going out the window now (smaller)
-        {x: 293, y: 128, scale: 100},        
+        {x: 293, y: 128, scale: 100},
         {x: 116, y: 160, scale: 65},       // outside - intact window
         {x: 149, y: 147, scale: 75},        // outside - smashing window (scale up = burst through)
         {x: 227, y: 175, scale: 75},
         {x: 256, y: 191, scale: 75},
         {x: 318, y: 235, scale: 75},
-        {x: 348, y: 264, scale: 75},        
+        {x: 348, y: 264, scale: 75},
         {x: 211, y: 68,  scale: 35},     // wide shot of building
         {x: 231, y: 96,  scale: 35},
         {x: 248, y: 117, scale: 35},  // 31

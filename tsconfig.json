@@ -6,6 +6,8 @@
     "moduleResolution": "Node16",
     /* Emit */
 
+    "noEmitOnError": true,
+
     "outDir": "dist/",
     /* Interop Constraints */
     // "isolatedModules": true,                          /* Ensure that each file can be safely transpiled without relying on other imports. */
