@@ -15,7 +15,7 @@
     "window"
   ],
   "author": "Will Westrop",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "dependencies": {
     "imagescript": "^1.2.9",
     "yargs": "^17.5.1"

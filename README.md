@@ -2,7 +2,7 @@
 
 When there's no other way to express how you feel....
 
-[Try it out here](https://wwestrop.github.io)
+[Try it out here](http://www.techsmash.io)
 
 ----
 
@@ -12,16 +12,9 @@ When there's no other way to express how you feel....
 
 **Step 3** Enjoy your new GIF
 
-----
-## Examples
 
-* Oracle NetSuite
-* Apple
-* nVidia
-* Sony (perhaps a bit broad)
-* Sharepoint
-* Excel
-* Jira/confluence
+![Facebook](doc/chuckFacebook.gif) &nbsp; ![Sharepoint](doc/chuckSharepoint.gif) &nbsp; ![Netsuite](doc/chuckNetsuite.gif) &nbsp; ![Ubisoft](doc/chuckUbisoft.gif)
+
 
 ## Running locally
 ```
