@@ -1,60 +1,16 @@
-//import { Image, Frame, GIF } from "./node_modules/imagescript/ImageScript.js";
-//import * as Imagescript from "imagescript";
-//import { Image, GIF, Frame } from "https://cdn.jsdelivr.net/gh/matmen/imagescript@browser/browser/ImageScript.js";
+//import { Image, GIF, Frame } from "imagescript/v2";
 import { Image, GIF, Frame } from "imagescript";
-// import { Image, GIF } from "https://cdn.skypack.dev/imagescript";
 import * as fs from 'fs/promises';
-import { IAnimationParams, WindowToss } from './animationParams.js';
+import { IAnimationParams } from './animationParams.js';
 
-// const imagescript = typeof window === 'undefined'
-//     ? await import("imagescript")
-//     : await import("https://cdn.skypack.dev/imagescript");
-
-// const Image = imagescript.Image;
-// const GIF = imagescript.GIF;
-// const Frame = imagescript.Frame;
 
 type Point = {x: number, y: number};
-type UserParams = { scale: number, xAdjust: number; yAdjust: number };
-
-
-
-async function browserMock() {
-
-    let x: Uint8Array | undefined;
-
-    function loadOverlay(file: Blob) {
-        var fr = new FileReader();
-
-        fr.onload = (e) => {
-            var r = fr.result;
-
-            if (r instanceof ArrayBuffer) {
-                x = new Uint8Array(r);
-            }
-            else {
-                alert("Couldn't load file");
-            }
-        };
-
-        fr.readAsArrayBuffer(file);
-
-    }
-
-    async function smashySmashyClick() {
-        if (!x) {
-            alert("Please specify an image file to overlay");
-            return;
-        }
-
-        let resultImg: any;
-        const result = await create(x, null!, WindowToss);
-        resultImg.src = dataHref(result);
-    }
-}
+export type UserParams = { scale: number, xAdjust: number; yAdjust: number };
 
 
 export async function create(overlayImage: Uint8Array, userParams: UserParams, animParams: IAnimationParams): Promise<Uint8Array> {
+
+    console.log("Working....");
 
     const baseImage = await loadGif(animParams.baseImage);
 
@@ -74,11 +30,11 @@ export async function create(overlayImage: Uint8Array, userParams: UserParams, a
 
         const overlayOffset = getOffset(scaledOverlayImage, userParams, animParams, i);
         if (!overlayOffset) {
-            console.log("(skip the overlay on this frame)");
+            // skip the overlay on this frame
             continue;
         }
 
-        console.log(`${i}::  ${JSON.stringify(overlayOffset)}`);
+        progBar(i, baseImage.length);
 
         for (let j = 1; j <= scaledOverlayImage.width; j++) {
             for (let k = 1; k <= scaledOverlayImage.height; k++) {
@@ -96,21 +52,15 @@ export async function create(overlayImage: Uint8Array, userParams: UserParams, a
                 const overlayPixel = scaledOverlayImage.getRGBAAt(j, k);
                 if (overlayPixel[3] > 150) {
                     // TODO proper alpha blending
-                    var newColour = Image.rgbToColor(overlayPixel[0], overlayPixel[1], overlayPixel[2]);
+                    const newColour = Image.rgbToColor(overlayPixel[0], overlayPixel[1], overlayPixel[2]);
                     frame.setPixelAt(candidatePixel.x, candidatePixel.y, newColour);
                 }
             }
         }
     }
 
-    var encodedBuffer = await baseImage.encode(100);
-
-    return encodedBuffer;
+    return await baseImage.encode(100);
 }
-
-
-
-
 
 
 function getOffset(overlay: Image, userParams: UserParams, animParams: IAnimationParams, frame: number): Point | undefined {
@@ -131,67 +81,36 @@ function getOffset(overlay: Image, userParams: UserParams, animParams: IAnimatio
 
 async function loadGif(filename: string) {
 
-    var buffer = await fs.readFile(filename);
+    const buffer = await fs.readFile(filename);
     return await GIF.decode(buffer);
-
-    // let fileContent: Uint8Array = null!;
-
-    // if (typeof window === 'undefined') {
-    //     const fs = await import("fs/promises");
-    //     fileContent = await fs.readFile(filename);
-    // }
-    // else {
-    //     fileContent = new Uint8Array(await (await fetch(filename)).arrayBuffer());
-    // }
-
-    // // /new FileReader().readAsArrayBuffer()
-
-    // return await GIF.decode(new Uint8Array(fileContent));
-    // // var fr = new FileReader();
-
-    // //     fr.onload = (e) => {
-    // //         var r = fr.result;
-
-    // //         if (r instanceof ArrayBuffer) {
-    // //             x = new Uint8Array(r);
-    // //         }
-    // //         else {
-    // //             alert("Couldn't load file");
-    // //         }
-    // //     };
-
-    // //     fr.readAsArrayBuffer(file);
-
-    // // return new Promise<GIF>((resolve, reject) =>
-    // // {
-    // //     try {
-    // //         var fr = new FileReader();
-
-    // //         fr.onload = (e) => {
-    // //             var r = fr.result;
-
-    // //             if (r instanceof ArrayBuffer) {
-    // //                 x = new Uint8Array(r);
-    // //             }
-    // //             else {
-    // //                 alert("Couldn't load file");
-    // //             }
-    // //         };
-
-    // //         fr.readAsArrayBuffer(file);
-    // //     }
-    // //     catch (ex) {
-    // //         reject(ex);
-    // //     }
-    // // });
-
-    // // var buffer2 = await fs.readFile(filename);
-    // // return await GIF.decode(buffer2);
 }
 
 
+let i: number = 0;
+function spinnySuffix() {
+    const chars = ["/", "-", "\\", "|"];
+    i = i >= chars.length ? 0 : i;
 
-function dataHref(gif: Uint8Array) {
-    return "data:image/gif;base64," + Buffer.from(gif).toString('base64');
+    return " " + chars[i++];
 }
 
+
+let isOne = true;
+function progBar(value: number, max: number) {
+
+    let str = "[";
+    for (let i = 0; i < max; i++) {
+        str += i <= value ? "█" : "░";
+    }
+    str += "]" + spinnySuffix();
+
+    if (!isOne) {
+        for (let i = 0; i < str.length; i++) {
+            process.stdout.write("\b");
+        }
+    }
+
+    isOne = false;
+
+    process.stdout.write(str);
+}

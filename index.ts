@@ -1,54 +1,48 @@
-import * as fs from "fs/promises";
-import { WindowToss } from './animationParams.js';
-import { create } from "./smash.js";
-
-
-type UserParams = { scale: number, xAdjust: number; yAdjust: number };
+import yargs from "yargs";
+import * as fs from 'fs/promises';
+import { WindowToss } from "./animationParams.js";
+import { create, UserParams } from "./smash.js";
+import path from "path";
 
 
 await main();
 
 async function main() {
-    const overlayImage = await fs.readFile("netsuite.gif");
+
+    const args = await getArgs();
+
+    const overlayImage = await fs.readFile(args.input);
 
     const u: UserParams = {
-        scale: 1.1,
-        xAdjust: 0,
-        yAdjust: 0,
+        scale: args.scale,
+        xAdjust: args.x,
+        yAdjust: args.y,
     };
 
     const encodedBuffer = await create(overlayImage, u, WindowToss);
 
-    await fs.writeFile("dist/out.gif", encodedBuffer);
-    await fs.writeFile("dist/out.html", htmlFile(encodedBuffer));
+    const outName = args.output ?? `chuck-${path.parse(args.input).name}.gif`;
+    await fs.writeFile(outName, encodedBuffer);
 
-    progBar(12, 34);
-    console.log("done");
+    console.log(`\n  ===> Wrote ${outName}`);
 }
 
-
-
-
-function progBar(value: number, max: number) {
-
-    let str = "[";
-
-    // ▒▓█
-
-    for (let i = 0; i < max; i++) {
-        //str += i <= value ? "██" : " ░";
-         str += i <= value ? "█" : "░";
-        //str += i <= value ? "#" : ".";
-    }
-
-    str += "]";
-
-    console.log(str);
+async function getArgs(): Promise<MyArgs> {
+    return await yargs(process.argv.slice(2))
+        .options({
+            input: { type: 'string', demandOption: true, alias: "i", describe: "File containing an image to be overlaid. Supported types: GIF" },
+            scale: { type: 'string', alias: "s", default: 1.0, describe: "Factor to scale the overlaid image, if fine-tuning is required" },
+            x: { type: 'number', default: 0, describe: "X offset for the overlaid image, if fine-tuning is required" },
+            y: { type: 'number', default: 0, describe: "Y offset for the overlaid image, if fine-tuning is required" },
+            output: { type: 'string', alias: "o", describe: "File to write the output" },
+        })
+        .parseAsync();
 }
 
-
-function htmlFile(gif: Uint8Array) {
-    return "<html><body><img src='data:image/gif;base64,"
-        + Buffer.from(gif).toString('base64')
-        + "' /></body></html>"
-}
+type MyArgs = {
+    input: string,
+    scale: number,
+    x: number,
+    y: number;
+    output: string | undefined,
+};
