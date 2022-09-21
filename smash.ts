@@ -1,5 +1,5 @@
 //import { Image, GIF, Frame } from "imagescript/v2";
-import { Image, GIF, Frame } from "imagescript";
+import { Image, decode, Frame, GIF } from "imagescript";
 import * as fs from 'fs/promises';
 import { IAnimationParams } from './animationParams.js';
 
@@ -22,7 +22,7 @@ export async function create(overlayImage: Uint8Array, userParams: UserParams, a
 
         desiredScale = animParams.keyFrames[i]?.scale * userParams.scale ?? desiredScale;
         if (scaledOverlayImage?.width !== desiredScale) {
-            scaledOverlayImage = (await GIF.decode(overlayImage))[0];
+            scaledOverlayImage = await decodeImage(overlayImage);
             scaledOverlayImage.resize(desiredScale, Image.RESIZE_AUTO);
         }
 
@@ -60,6 +60,17 @@ export async function create(overlayImage: Uint8Array, userParams: UserParams, a
     }
 
     return await baseImage.encode(100);
+}
+
+
+async function decodeImage(imageData: Uint8Array): Promise<Image> {
+    var result = await decode(imageData, true);
+    if (result instanceof GIF) {
+        return result[0];
+    }
+    else {
+        return result;
+    }
 }
 
 
