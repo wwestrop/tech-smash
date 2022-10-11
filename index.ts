@@ -17,6 +17,7 @@ async function main() {
         scale: args.scale,
         xAdjust: args.x,
         yAdjust: args.y,
+        speed: args.speed
     };
 
     const encodedBuffer = await create(overlayImage, u, WindowToss);
@@ -35,6 +36,7 @@ async function getArgs(): Promise<MyArgs> {
             x: { type: 'number', default: 0, describe: "X offset for the overlaid image, if fine-tuning is required" },
             y: { type: 'number', default: 0, describe: "Y offset for the overlaid image, if fine-tuning is required" },
             output: { type: 'string', alias: "o", describe: "File to write the output" },
+            speed: { type: 'number', default: 1, describe: "Speed of the output, where 1.0 is the same speed as the input" },
         })
         .parseAsync();
 }
@@ -45,4 +47,5 @@ type MyArgs = {
     x: number,
     y: number;
     output: string | undefined,
+    speed: number,
 };

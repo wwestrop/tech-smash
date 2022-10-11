@@ -5,7 +5,7 @@ import { IAnimationParams } from './animationParams.js';
 
 
 type Point = {x: number, y: number};
-export type UserParams = { scale: number, xAdjust: number; yAdjust: number };
+export type UserParams = { scale: number, xAdjust: number; yAdjust: number, speed: number };
 
 
 export async function create(overlayImage: Uint8Array, userParams: UserParams, animParams: IAnimationParams): Promise<Uint8Array> {
@@ -19,6 +19,7 @@ export async function create(overlayImage: Uint8Array, userParams: UserParams, a
 
     for (let i = 0; i < baseImage.length; i++) {
         const frame: Frame = baseImage[i];
+        (<any>frame).duration = getFrameDuration(frame, userParams);
 
         desiredScale = animParams.keyFrames[i]?.scale * userParams.scale ?? desiredScale;
         if (scaledOverlayImage?.width !== desiredScale) {
@@ -63,6 +64,15 @@ export async function create(overlayImage: Uint8Array, userParams: UserParams, a
 }
 
 
+function getFrameDuration(frame: Frame, userParams: UserParams): number {
+    const speed = userParams.speed === 0 ? 1 : userParams.speed;
+    const frameTime = (<any>frame).duration / speed;
+
+    // most browsers only support 50fps GIFs (frame time = 20ms)
+    return Math.max(20, frameTime);
+}
+
+
 async function decodeImage(imageData: Uint8Array): Promise<Image> {
     var result = await decode(imageData, true);
     if (result instanceof GIF) {
@@ -90,7 +100,7 @@ function getOffset(overlay: Image, userParams: UserParams, animParams: IAnimatio
     };
 }
 
-async function loadGif(filename: string) {
+async function loadGif(filename: string): Promise<GIF> {
 
     const buffer = await fs.readFile(filename);
     return await GIF.decode(buffer);
