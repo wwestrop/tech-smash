@@ -23,6 +23,7 @@ npm run build
 npm start -- --input "input-overlay.gif" \
              --output "desired/output/file.gif" \
              --scale 1.0 \
+             --speed 1.0 \
              -x 10 \
              -y 20
 ```
